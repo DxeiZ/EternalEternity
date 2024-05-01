@@ -147,7 +147,7 @@
             this.volumeDell.Name = "volumeDell";
             this.volumeDell.Size = new System.Drawing.Size(169, 40);
             this.volumeDell.TabIndex = 3;
-            this.volumeDell.Text = "Ses azalat";
+            this.volumeDell.Text = "Ses azalt";
             this.volumeDell.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.volumeDell.UseVisualStyleBackColor = false;
             this.volumeDell.Click += new System.EventHandler(this.volumeDell_Click);
