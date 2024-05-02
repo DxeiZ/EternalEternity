@@ -6,29 +6,32 @@ namespace EternalEternity.Addons
 {
     public class RAM
     {
+        public uint Speed { get; set; }
         public ByteSize Capacity { get; set; }
-        public UInt32 Speed { get; set; }
+        public string Manufacturer { get; set; }
     }
 
     public class RAMInfo
     {
         public RAMInfo()
-        {         
+        {
             try
             {
                 ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_PhysicalMemory");
                 foreach (ManagementObject mo in searcher.Get())
                 {
-                    RAM module = new RAM();
+                    RAM ram = new RAM();
 
-                    module.Capacity = ByteSize.FromBytes(Convert.ToDouble(mo.Properties["Capacity"].Value));
-                    module.Speed = Convert.ToUInt32(mo.Properties["Speed"].Value);
+                    ram.Speed = Convert.ToUInt32(mo.Properties["Speed"].Value);
+                    ram.Capacity = ByteSize.FromBytes(Convert.ToDouble(mo.Properties["Capacity"].Value));
+                    ram.Manufacturer = mo.Properties["Manufacturer"].Value?.ToString();
 
-                    Modules.Add(module);
+                    RAMs.Add(ram);
                 }
             }
             catch { }
         }
-        public List<RAM> Modules = new List<RAM>();
+
+        public List<RAM> RAMs { get; set; } = new List<RAM>();
     }
 }

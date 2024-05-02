@@ -21,30 +21,11 @@ namespace EternalEternity
         private void System_Management_Load(object sender, EventArgs e) => timer1.Start();
         private void timer1_Tick(object sender, EventArgs e)
         {
-            MEMORYSTATUSEX memStatus = new MEMORYSTATUSEX(0);
-            if (GlobalMemoryStatusEx(ref memStatus))
-            {
-                siticoneProgressBar1.Value = (int)memStatus.dwMemoryLoad;
-                siticoneLabel1.Text = memStatus.dwMemoryLoad.ToString() + "%";
-                siticoneTextBox2.Text = $"Toplam bellek miktarı: {memStatus.ullTotalPhys / 1024.0 / 1024.0 / 1024.0:F2} GB";
-                siticoneTextBox3.Text = $"Boş bellek miktarı: {memStatus.ullAvailPhys / 1024.0 / 1024.0 / 1024.0:F2} GB";
-                siticoneTextBox4.Text = $"Toplam page file miktarı: {memStatus.ullTotalPageFile / 1024.0 / 1024.0 / 1024.0:F2} GB";
-                siticoneTextBox5.Text = $"Boş page file miktarı: {memStatus.ullAvailPageFile / 1024.0 / 1024.0 / 1024.0:F2} GB";
-                siticoneTextBox6.Text = $"Toplam sanal bellek miktarı: {memStatus.ullTotalVirtual / 1024.0 / 1024.0 / 1024.0:F2} GB";
-                siticoneTextBox7.Text = $"Boş sanal bellek miktarı: {memStatus.ullAvailVirtual / 1024.0 / 1024.0 / 1024.0:F2} GB";
-            }
-
-            SYSTEM_POWER_STATUS status;
-            if (GetSystemPowerStatus(out status))
-            {
-                siticoneProgressBar2.Value = status.BatteryLifePercent;
-                siticoneLabel2.Text = status.BatteryLifePercent.ToString() + "%";
-                siticoneTextBox13.Text = $"AC Bağlantısı Durumu: " + (status.ACLineStatus == 1 ? "Bağlı" : "Bağlı Değil");
-                siticoneTextBox11.Text = $"Batarya Durumu: " + GetBatteryStatus(status.BatteryFlag);
-                siticoneTextBox9.Text = $"Kalan Pil Ömrü: " + secToDate((int)status.BatteryLifeTime);
-                siticoneTextBox8.Text = $"Tam Pil Ömrü: " + secToDate((int)status.BatteryFullLifeTime);
-            }
+            UpdateMemoryInfo();
+            UpdatePowerInfo();
         }
+
+        private string GetFormattedSize(ulong size) => $"{size / 1024.0 / 1024.0 / 1024.0:F2} GB";
         private void ıconButton3_Click(object sender, EventArgs e) { Hide(); new Main().Show(); }
         #endregion
         #region Audio Control
@@ -175,6 +156,23 @@ namespace EternalEternity
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX lpBuffer);
+
+        private void UpdateMemoryInfo()
+        {
+            MEMORYSTATUSEX memStatus = new MEMORYSTATUSEX(0);
+            if (GlobalMemoryStatusEx(ref memStatus))
+            {
+                siticoneProgressBar1.Value = (int)memStatus.dwMemoryLoad;
+                siticoneLabel1.Text = $"{memStatus.dwMemoryLoad}%";
+
+                siticoneTextBox2.Text = $"Toplam bellek miktarı: {GetFormattedSize(memStatus.ullTotalPhys)}";
+                siticoneTextBox3.Text = $"Boş bellek miktarı: {GetFormattedSize(memStatus.ullAvailPhys)}";
+                siticoneTextBox4.Text = $"Toplam page file miktarı: {GetFormattedSize(memStatus.ullTotalPageFile)}";
+                siticoneTextBox5.Text = $"Boş page file miktarı: {GetFormattedSize(memStatus.ullAvailPageFile)}";
+                siticoneTextBox6.Text = $"Toplam sanal bellek miktarı: {GetFormattedSize(memStatus.ullTotalVirtual)}";
+                siticoneTextBox7.Text = $"Boş sanal bellek miktarı: {GetFormattedSize(memStatus.ullAvailVirtual)}";
+            }
+        }
         #endregion
         #region Batery Status
         [StructLayout(LayoutKind.Sequential)]
@@ -248,6 +246,20 @@ namespace EternalEternity
             }
 
             return output;
+        }
+        private void UpdatePowerInfo()
+        {
+            SYSTEM_POWER_STATUS status;
+            if (GetSystemPowerStatus(out status))
+            {
+                siticoneProgressBar2.Value = status.BatteryLifePercent;
+                siticoneLabel2.Text = $"{status.BatteryLifePercent}%";
+
+                siticoneTextBox13.Text = $"AC Bağlantısı Durumu: {(status.ACLineStatus == 1 ? "Bağlı" : "Bağlı Değil")}";
+                siticoneTextBox11.Text = $"Batarya Durumu: {GetBatteryStatus(status.BatteryFlag)}";
+                siticoneTextBox9.Text = $"Kalan Pil Ömrü: {secToDate((int)status.BatteryLifeTime)}";
+                siticoneTextBox8.Text = $"Tam Pil Ömrü: {secToDate((int)status.BatteryFullLifeTime)}";
+            }
         }
         #endregion
     }

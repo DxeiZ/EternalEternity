@@ -1,6 +1,8 @@
 ﻿using EternalEternity;
 using EternalEternity.Addons;
 using System;
+using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 
 /*
@@ -14,17 +16,9 @@ namespace DxSystemControl
 {
     public partial class Main : Form
     {
-        string sysType;
-        ByteSize temp = new ByteSize();
-        uint memorySpeed;
-
         public Main()
         {
             InitializeComponent();
-
-            if (Environment.Is64BitOperatingSystem) sysType = "64-bit";
-            else sysType = "32-bit";
-            label1.Text = $"{OS.GetOS()} {sysType}";
 
             CPUInfo cpuInfo = new CPUInfo();
             RAMInfo ramInfo = new RAMInfo();
@@ -34,56 +28,64 @@ namespace DxSystemControl
             AudioInfo audioInfo = new AudioInfo();
             BIOSInfo biosInfo = new BIOSInfo();
 
-            foreach (CPU cpu in cpuInfo.CPUs)
+            #region İşletim sistemi bilgisi
+            string sysType = Environment.Is64BitOperatingSystem ? "64-bit" : "32-bit";
+            getOS.Text = $"{OS.GetOS()} {sysType}";
+            #endregion
+            #region CPU bilgisi
+            CPU cpu = cpuInfo.CPUs.FirstOrDefault();
+            if (cpu != null)
             {
-                label2.Text = $"{cpu.Name} (Çekirdekler: {cpu.Cores}, Mantıksal İşlemciler: {cpu.LogicalCpus})";
+                getCPU.Text = $"{cpu.Name} (Çekirdekler: {cpu.Cores}, Mantıksal İşlemciler: {cpu.LogicalCpus})";
             }
-
-            foreach (RAM ram in ramInfo.Modules)
+            #endregion
+            #region RAM bilgisi
+            StringBuilder ramText = new StringBuilder();
+            foreach (RAM ram in ramInfo.RAMs)
             {
-                temp += ram.Capacity;
-                memorySpeed += ram.Speed;
+                ramText.AppendLine($"{ram.Manufacturer} {ram.Capacity}@{ram.Speed}MHz");
             }
-            label3.Text = $"{temp} @ {memorySpeed}Hmz";
-
-            foreach (Motherboard mobo in motherboardInfo.Boards)
+            getRAM.Text = ramText.ToString();
+            #endregion
+            #region Anakart bilgisi
+            Motherboard motherboard = motherboardInfo.Boards.FirstOrDefault();
+            if (motherboard != null)
             {
-                label4.Text = mobo.Manufacturer;
+                getMotherboard.Text = motherboard.Manufacturer;
             }
-
-            label5.Text = "";
+            #endregion
+            #region GPU bilgisi
+            StringBuilder gpuText = new StringBuilder();
             foreach (GPU gpu in gpuInfo.GPUs)
             {
-                label5.Text += $"{gpu.Name} ({gpu.Memory}){Environment.NewLine}";
+                gpuText.AppendLine($"{gpu.Name} ({gpu.Memory})");
             }
-
+            getGPU.Text = gpuText.ToString();
+            #endregion
+            #region Depolama bilgisi
+            StringBuilder storageText = new StringBuilder();
             foreach (Disk disk in storageInfo.Disks)
             {
-                if (disk.Capacity.ToString() != "b")
+                if (disk.Capacity.Bytes != 0)
                 {
-                    label6.Text = $"{disk.Model} ({disk.Capacity})";
-                }
-                else
-                {
-                    label6.Text = disk.Model;
+                    storageText.AppendLine($"{disk.Model} ({disk.Capacity})");
                 }
             }
-
-            if (biosInfo != null)
-            {
-                label7.Text = $"{biosInfo.Manufacturer} {biosInfo.Name}";
-            }
-            else
-            {
-                label7.Text = $"BIOS tespit edilemedi";
-            }
-
+            getStorage.Text = storageText.ToString();
+            #endregion
+            #region BIOS bilgisi
+            getBIOS.Text = biosInfo != null ? $"{biosInfo.Manufacturer} {biosInfo.Name}" : "BIOS tespit edilemedi";
+            #endregion
+            #region Ses cihazı bilgisi
+            StringBuilder audioText = new StringBuilder();
             foreach (AudioDevice device in audioInfo.AudioDevices)
             {
-                label8.Text = device.ProductName;
+                audioText.AppendLine(device.ProductName);
             }
+            getAudio.Text = audioText.ToString();
+            #endregion
         }
 
-        private void ıconButton1_Click(object sender, EventArgs e) { Hide(); new System_Management().Show(); }
+        private void systemControlBtn_Click(object sender, EventArgs e) { Hide(); new System_Management().Show(); }
     }
 }

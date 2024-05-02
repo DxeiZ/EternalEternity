@@ -756,9 +756,9 @@
             this.label9.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(78)))), ((int)(((byte)(87)))), ((int)(((byte)(96)))));
             this.label9.Location = new System.Drawing.Point(9, 656);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(105, 13);
+            this.label9.Size = new System.Drawing.Size(108, 13);
             this.label9.TabIndex = 12;
-            this.label9.Text = "Developer by DxeiZ";
+            this.label9.Text = "Developed by DxeiZ";
             // 
             // ıconButton3
             // 
@@ -785,7 +785,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(4)))), ((int)(((byte)(5)))), ((int)(((byte)(6)))));
-            this.ClientSize = new System.Drawing.Size(734, 681);
+            this.ClientSize = new System.Drawing.Size(734, 676);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.ıconButton3);
             this.Controls.Add(this.siticoneGroupBox6);
